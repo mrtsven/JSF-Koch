@@ -15,26 +15,32 @@ public class KochManager implements Observer {
         this.application = application;
         koch.addObserver(this);
     }
+
     public void changeLevel(int nxt) {
         koch.setLevel(nxt);
-        drawEdges();
-    }
-    public void drawEdges() {
-        application.clearKochPanel();
-
         TimeStamp stamp = new TimeStamp();
 
         stamp.setBegin("Start calculation");
         koch.generateLeftEdge();
         koch.generateBottomEdge();
         koch.generateRightEdge();
-        for(Edge edge : edges)
-            application.drawEdge(edge);
+
         stamp.setEnd("calculation complete");
         application.setTextCalc(stamp.toString());
+
+        drawEdges();
+
         application.setTextNrEdges(""+edges.size());
 
     }
+
+    public void drawEdges() {
+        application.clearKochPanel();
+        for(Edge edge : edges)
+            application.drawEdge(edge);
+
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         edges.add((Edge)arg);
