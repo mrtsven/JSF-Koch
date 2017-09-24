@@ -35,10 +35,14 @@ public class KochManager implements Observer {
     }
 
     public void drawEdges() {
+        TimeStamp stamp = new TimeStamp();
+        stamp.setBegin("Start draw");
         application.clearKochPanel();
         for(Edge edge : edges)
             application.drawEdge(edge);
 
+        stamp.setEnd("drawing complete");
+        application.setTextDraw(stamp.toString());
     }
 
     @Override
