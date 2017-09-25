@@ -1,5 +1,6 @@
 package calculate;
 
+import javafx.application.Platform;
 import jsf31kochfractalfx.JSF31KochFractalFX;
 
 import timeutil.TimeStamp;
@@ -45,11 +46,6 @@ public class KochManager {
         application.setTextDraw(stamp.toString());
 
 
-        this.stamp.setEnd("calculation complete");
-
-        application.setTextCalc(this.stamp.toString());
-
-        application.setTextNrEdges(""+edges.size());
     }
 
     public int getCount() {
@@ -64,8 +60,13 @@ public class KochManager {
         this.count++;
 
         if (count == 3) {
-
             application.requestDrawEdges();
+
+            Platform.runLater(() -> {
+                this.stamp.setEnd("calculation complete");
+                application.setTextCalc(this.stamp.toString());
+                application.setTextNrEdges("" + edges.size());
+            });
         }
     }
 }
