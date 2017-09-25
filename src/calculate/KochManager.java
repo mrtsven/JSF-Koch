@@ -17,6 +17,7 @@ public class KochManager implements Observer {
     }
 
     public void changeLevel(int nxt) {
+        edges.clear();
         koch.setLevel(nxt);
         TimeStamp stamp = new TimeStamp();
 
