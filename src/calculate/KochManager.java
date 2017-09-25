@@ -7,31 +7,30 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class KochManager implements Observer {
-    KochFractal koch = new KochFractal();
+public class KochManager {
     private JSF31KochFractalFX application;
     private ArrayList<Edge> edges = new ArrayList<>();
+    TimeStamp stamp;
+    private int count = 0;
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
-        koch.addObserver(this);
     }
 
     public void changeLevel(int nxt) {
         edges.clear();
-        koch.setLevel(nxt);
-        TimeStamp stamp = new TimeStamp();
+        stamp = new TimeStamp();
 
+        count = 0;
         stamp.setBegin("Start calculation");
-        koch.generateLeftEdge();
-        koch.generateBottomEdge();
-        koch.generateRightEdge();
 
-        stamp.setEnd("calculation complete");
-        application.setTextCalc(stamp.toString());
+        EdgeGenerator leftEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Left, this);
+        new Thread(leftEdgeGenerator).run();
 
-        drawEdges();
+        EdgeGenerator rightEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Right, this);
+        new Thread(rightEdgeGenerator).run();
 
-        application.setTextNrEdges(""+edges.size());
+        EdgeGenerator bottomEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Bottom, this);
+        new Thread(bottomEdgeGenerator).run();
 
     }
 
@@ -46,8 +45,25 @@ public class KochManager implements Observer {
         application.setTextDraw(stamp.toString());
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        edges.add((Edge)arg);
+    public int getCount() {
+        return count;
+    }
+
+    public synchronized void addEdge(Edge edge) {
+        edges.add(edge);
+    }
+
+    public synchronized void edgeDone() {
+        this.count++;
+
+        if (count == 3) {
+
+            application.requestDrawEdges();
+
+            stamp.setEnd("calculation complete");
+            application.setTextCalc(stamp.toString());
+
+            application.setTextNrEdges(""+edges.size());
+        }
     }
 }

@@ -11,12 +11,18 @@ import javafx.scene.paint.Color;
  *
  * @author Peter Boots
  */
-public class KochFractal extends Observable {
+public class KochFractal extends Observable{
 
     private int level = 1;      // The current level of the fractal
     private int nrOfEdges = 3;  // The number of edges in the current level of the fractal
     private float hue;          // Hue value of color for next edge
-    private boolean cancelled;  // Flag to indicate that calculation has been cancelled 
+    private boolean cancelled;  // Flag to indicate that calculation has been cancelled
+
+    public KochFractal(int level) {
+        setLevel(level);
+    }
+
+    public KochFractal() { }
 
     private void drawKochEdge(double ax, double ay, double bx, double by, int n) {
         if (!cancelled) {
@@ -56,10 +62,6 @@ public class KochFractal extends Observable {
         hue = 2f / 3f;
         cancelled = false;
         drawKochEdge((1 + Math.sqrt(3.0) / 2.0) / 2, 0.75, 0.5, 0.0, level);
-    }
-    
-    public void cancel() {
-        cancelled = true;
     }
 
     public void setLevel(int lvl) {
