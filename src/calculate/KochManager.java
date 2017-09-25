@@ -24,13 +24,13 @@ public class KochManager {
         stamp.setBegin("Start calculation");
 
         EdgeGenerator leftEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Left, this);
-        new Thread(leftEdgeGenerator).run();
+        new Thread(leftEdgeGenerator).start();
 
         EdgeGenerator rightEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Right, this);
-        new Thread(rightEdgeGenerator).run();
+        new Thread(rightEdgeGenerator).start();
 
         EdgeGenerator bottomEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Bottom, this);
-        new Thread(bottomEdgeGenerator).run();
+        new Thread(bottomEdgeGenerator).start();
 
     }
 
@@ -43,6 +43,13 @@ public class KochManager {
 
         stamp.setEnd("drawing complete");
         application.setTextDraw(stamp.toString());
+
+
+        this.stamp.setEnd("calculation complete");
+
+        application.setTextCalc(this.stamp.toString());
+
+        application.setTextNrEdges(""+edges.size());
     }
 
     public int getCount() {
@@ -59,11 +66,6 @@ public class KochManager {
         if (count == 3) {
 
             application.requestDrawEdges();
-
-            stamp.setEnd("calculation complete");
-            application.setTextCalc(stamp.toString());
-
-            application.setTextNrEdges(""+edges.size());
         }
     }
 }
