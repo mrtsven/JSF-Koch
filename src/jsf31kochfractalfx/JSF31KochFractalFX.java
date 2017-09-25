@@ -36,7 +36,6 @@ public class JSF31KochFractalFX extends Application {
     private double lastDragY = 0.0;
 
     // Koch manager
-    // TO DO: Create class KochManager in package calculate
     private KochManager kochManager;
     
     // Current level of Koch fractal
