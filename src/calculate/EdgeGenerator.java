@@ -30,6 +30,7 @@ public class EdgeGenerator implements Callable<List<Edge>>, Observer {
                 break;
             case Bottom:
                 fractal.generateBottomEdge();
+                break;
         }
         return edges;
     }

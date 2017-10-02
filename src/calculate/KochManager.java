@@ -13,12 +13,16 @@ public class KochManager {
     private JSF31KochFractalFX application;
     private ArrayList<Edge> edges = new ArrayList<>();
     private TimeStamp stamp;
+    private boolean busy = false;
 
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
     }
 
     public void changeLevel(int nxt) {
+        if (busy)
+            return;
+        busy = true;
         stamp = new TimeStamp();
         stamp.setBegin("Start calculation");
 
@@ -31,7 +35,9 @@ public class KochManager {
         Future<List<Edge>> rightFuture =  pool.submit(rightEdgeGenerator);
         Future<List<Edge>> bottomFuture = pool.submit(bottomEdgeGenerator);
 
-        new Thread(()  -> {
+        pool.shutdown();
+
+        new Thread(() -> {
             try {
                 edges.clear();
                 edges.addAll(leftFuture.get());
@@ -49,6 +55,7 @@ public class KochManager {
                 application.setTextNrEdges("" + edges.size());
 
                 drawEdges();
+                busy = false;
             });
         }).start();
 
