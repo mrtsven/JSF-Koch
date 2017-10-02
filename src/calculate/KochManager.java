@@ -1,5 +1,7 @@
 package calculate;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import jsf31kochfractalfx.JSF31KochFractalFX;
 
 import timeutil.TimeStamp;
@@ -17,7 +19,6 @@ public class KochManager {
     }
 
     public void changeLevel(int nxt) {
-        edges.clear();
         stamp = new TimeStamp();
 
         stamp.setBegin("Start calculation");
@@ -33,21 +34,27 @@ public class KochManager {
         Future<List<Edge>> rightFuture =  pool.submit(rightEdgeGenerator);
         Future<List<Edge>> bottomFuture = pool.submit(bottomEdgeGenerator);
 
-        try {
-            edges.addAll(leftFuture.get());
-            edges.addAll(rightFuture.get());
-            edges.addAll(bottomFuture.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        new Thread(()  -> {
+            try {
+                edges.clear();
+                edges.addAll(leftFuture.get());
+                edges.addAll(rightFuture.get());
+                edges.addAll(bottomFuture.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
-        this.stamp.setEnd("calculation complete");
-        application.setTextCalc(this.stamp.toString());
-        application.setTextNrEdges("" + edges.size());
+            Platform.runLater(() -> {
+                this.stamp.setEnd("calculation complete");
+                application.setTextCalc(this.stamp.toString());
+                application.setTextNrEdges("" + edges.size());
 
-        drawEdges();
+                drawEdges();
+            });
+        }).start();
+
     }
 
     public void drawEdges() {
