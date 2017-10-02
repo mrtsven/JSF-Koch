@@ -1,24 +1,26 @@
 package calculate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.*;
 
-public class EdgeGenerator implements Runnable, Observer {
+public class EdgeGenerator implements Callable<List<Edge>>, Observer {
 
     private KochFractal fractal;
     private EdgeType type;
-    private KochManager manager;
+    private ArrayList<Edge> edges;
 
-    public EdgeGenerator(int level, EdgeType type, KochManager manager) {
-        this.fractal = new KochFractal(level);
-        this.fractal.addObserver(this);
+    public EdgeGenerator(int level, EdgeType type) {
+        fractal = new KochFractal(level);
+        fractal.addObserver(this);
+        edges = new ArrayList<>(fractal.getNrOfEdges() / 3);
         this.type = type;
-        this.manager = manager;
     }
 
     @Override
-    public void run() {
-
+    public List<Edge> call() {
         switch (type) {
             case Left:
                 fractal.generateLeftEdge();
@@ -29,14 +31,11 @@ public class EdgeGenerator implements Runnable, Observer {
             case Bottom:
                 fractal.generateBottomEdge();
         }
-        manager.edgeDone();
+        return edges;
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        manager.addEdge((Edge)arg);
-
+        edges.add((Edge)arg);
     }
-
-
 }
