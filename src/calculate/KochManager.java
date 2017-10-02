@@ -20,13 +20,10 @@ public class KochManager {
 
     public void changeLevel(int nxt) {
         stamp = new TimeStamp();
-
         stamp.setBegin("Start calculation");
 
         EdgeGenerator leftEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Left);
-
         EdgeGenerator rightEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Right);
-
         EdgeGenerator bottomEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Bottom);
 
         ExecutorService pool = Executors.newFixedThreadPool(3);
@@ -60,6 +57,7 @@ public class KochManager {
     public void drawEdges() {
         TimeStamp stamp = new TimeStamp();
         stamp.setBegin("Start draw");
+
         application.clearKochPanel();
         for(Edge edge : edges)
             application.drawEdge(edge);
