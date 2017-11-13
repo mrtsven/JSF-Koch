@@ -17,6 +17,7 @@ public class KochFractal extends Observable{
     private int nrOfEdges = 3;  // The number of edges in the current level of the fractal
     private float hue;          // Hue value of color for next edge
     private boolean cancelled;  // Flag to indicate that calculation has been cancelled
+    private int sleep;
 
     public KochFractal(int level) {
         setLevel(level);
@@ -25,6 +26,12 @@ public class KochFractal extends Observable{
     public KochFractal() { }
 
     private void drawKochEdge(double ax, double ay, double bx, double by, int n) {
+        try {
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            cancelled = true;
+            return;
+        }
         if (!cancelled) {
             if (n == 1) {
                 hue = hue + 1.0f / nrOfEdges;
@@ -47,18 +54,21 @@ public class KochFractal extends Observable{
     }
 
     public void generateLeftEdge() {
+        sleep = 1;
         hue = 0f;
         cancelled = false;
         drawKochEdge(0.5, 0.0, (1 - Math.sqrt(3.0) / 2.0) / 2, 0.75, level);
     }
 
     public void generateBottomEdge() {
+        sleep = 2;
         hue = 1f / 3f;
         cancelled = false;
         drawKochEdge((1 - Math.sqrt(3.0) / 2.0) / 2, 0.75, (1 + Math.sqrt(3.0) / 2.0) / 2, 0.75, level);
     }
 
     public void generateRightEdge() {
+        sleep = 3;
         hue = 2f / 3f;
         cancelled = false;
         drawKochEdge((1 + Math.sqrt(3.0) / 2.0) / 2, 0.75, 0.5, 0.0, level);

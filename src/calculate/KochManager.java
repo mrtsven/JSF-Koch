@@ -34,7 +34,6 @@ public class KochManager {
         stamp = new TimeStamp();
         stamp.setBegin("Start calculation");
 
-
         leftEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Left);
         rightEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Right);
         bottomEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Bottom);
