@@ -28,6 +28,7 @@ public class EdgeGenerator extends Task<ArrayList<Edge>> implements Observer {
 
         updateValue(edges);
         updateProgress(edges.size(), fractal.getNrOfEdges() / 3);
+        updateMessage("Nr of edges: " + edges.size());
     }
 
     @Override

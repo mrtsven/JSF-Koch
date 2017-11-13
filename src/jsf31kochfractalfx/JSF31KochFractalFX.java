@@ -22,6 +22,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -64,6 +65,10 @@ public class JSF31KochFractalFX extends Application {
     private ProgressBar progressEdgeLeft;
     private ProgressBar progressEdgeRight;
 
+    private Label progressEdgeBottomMessage;
+    private Label progressEdgeLeftMessage;
+    private Label progressEdgeRightMessage;
+
     @Override
     public void start(Stage primaryStage) {
        
@@ -104,73 +109,50 @@ public class JSF31KochFractalFX extends Application {
         labelLevel = new Label("Level: " + currentLevel);
         grid.add(labelLevel, 0, 6);
 
-        grid.add(new Label("Progress Edge Right"), 0, 7, 1, 1);
+        grid.add(new Label("Progress Edge Right"), 0, 7, 2, 1);
         progressEdgeRight = new ProgressBar();
-        grid.add(progressEdgeRight, 1, 7, 1,1);
+        grid.add(progressEdgeRight, 2, 7, 1,1);
+        progressEdgeRightMessage = new Label("");
+        grid.add(progressEdgeRightMessage, 3, 7, 1,1);
 
-
-        grid.add(new Label("Progress Edge Bottom"), 0, 8, 1, 1);
+        grid.add(new Label("Progress Edge Bottom"), 0, 8, 2, 1);
         progressEdgeBottom = new ProgressBar();
-        grid.add(progressEdgeBottom, 1, 8, 1,1);
+        grid.add(progressEdgeBottom, 2, 8, 1,1);
+        progressEdgeBottomMessage = new Label("");
+        grid.add(progressEdgeBottomMessage, 3, 8, 1,1);
 
-
-        grid.add(new Label("Progress Edge Left"), 0, 9, 1, 1);
+        grid.add(new Label("Progress Edge Left"), 0, 9, 2, 1);
         progressEdgeLeft = new ProgressBar();
-        grid.add(progressEdgeLeft, 1, 9, 1,1);
-        
+        grid.add(progressEdgeLeft, 2, 9, 1,1);
+        progressEdgeLeftMessage = new Label("");
+        grid.add(progressEdgeLeftMessage, 3, 9, 1,1);
+
         // Button to increase level of Koch fractal
         Button buttonIncreaseLevel = new Button();
         buttonIncreaseLevel.setText("Increase Level");
-        buttonIncreaseLevel.setOnAction(event -> increaseLevelButtonActionPerformed(event));
+        buttonIncreaseLevel.setOnAction(this::increaseLevelButtonActionPerformed);
         grid.add(buttonIncreaseLevel, 3, 6);
 
         // Button to decrease level of Koch fractal
         Button buttonDecreaseLevel = new Button();
         buttonDecreaseLevel.setText("Decrease Level");
-        buttonDecreaseLevel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                decreaseLevelButtonActionPerformed(event);
-            }
-        });
+        buttonDecreaseLevel.setOnAction(this::decreaseLevelButtonActionPerformed);
         grid.add(buttonDecreaseLevel, 5, 6);
         
         // Button to fit Koch fractal in Koch panel
         Button buttonFitFractal = new Button();
         buttonFitFractal.setText("Fit Fractal");
-        buttonFitFractal.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                fitFractalButtonActionPerformed(event);
-            }
-        });
+        buttonFitFractal.setOnAction(this::fitFractalButtonActionPerformed);
         grid.add(buttonFitFractal, 14, 6);
         
         // Add mouse clicked event to Koch panel
-        kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED,
-            new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    kochPanelMouseClicked(event);
-                }
-            });
+        kochPanel.addEventHandler(MouseEvent.MOUSE_CLICKED, this::kochPanelMouseClicked);
         
         // Add mouse pressed event to Koch panel
-        kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED,
-            new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    kochPanelMousePressed(event);
-                }
-            });
+        kochPanel.addEventHandler(MouseEvent.MOUSE_PRESSED, this::kochPanelMousePressed);
         
         // Add mouse dragged event to Koch panel
-        kochPanel.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                kochPanelMouseDragged(event);
-            }
-        });
+        kochPanel.setOnMouseDragged(this::kochPanelMouseDragged);
         
         // Create Koch manager and set initial level
         resetZoom();
@@ -253,12 +235,7 @@ public class JSF31KochFractalFX extends Application {
     }
     
     public void requestDrawEdges() {
-        Platform.runLater(new Runnable(){
-            @Override
-            public void run() {
-                kochManager.drawEdges();
-            }
-        });
+        Platform.runLater(() -> kochManager.drawEdges());
     }
     
     private void increaseLevelButtonActionPerformed(ActionEvent event) {
@@ -333,14 +310,17 @@ public class JSF31KochFractalFX extends Application {
 
     public void addRightEdgeTask(Task<ArrayList<Edge>> task) {
         progressEdgeRight.progressProperty().bind(task.progressProperty());
+        progressEdgeRightMessage.textProperty().bind(task.messageProperty());
     }
 
     public void addBottomEdgeTask(Task<ArrayList<Edge>> task) {
         progressEdgeBottom.progressProperty().bind(task.progressProperty());
+        progressEdgeBottomMessage.textProperty().bind(task.messageProperty());
     }
 
     public void addLeftEdgeTask(Task<ArrayList<Edge>> task) {
         progressEdgeLeft.progressProperty().bind(task.progressProperty());
+        progressEdgeLeftMessage.textProperty().bind(task.messageProperty());
     }
 
     /**
