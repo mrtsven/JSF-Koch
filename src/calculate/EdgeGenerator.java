@@ -3,10 +3,8 @@ package calculate;
 import javafx.concurrent.Task;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.*;
 
 public class EdgeGenerator extends Task<ArrayList<Edge>> implements Observer {
 

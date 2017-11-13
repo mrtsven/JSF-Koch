@@ -1,13 +1,11 @@
 package calculate;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import jsf31kochfractalfx.JSF31KochFractalFX;
-
 import timeutil.TimeStamp;
+
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
 
 public class KochManager {
     private JSF31KochFractalFX application;
@@ -56,9 +54,7 @@ public class KochManager {
                 edges.addAll(leftEdgeGenerator.get());
                 edges.addAll(rightEdgeGenerator.get());
                 edges.addAll(bottomEdgeGenerator.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
 
