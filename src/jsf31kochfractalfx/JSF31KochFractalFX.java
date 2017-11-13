@@ -5,8 +5,12 @@
 package jsf31kochfractalfx;
 
 import calculate.*;
+
+import java.util.ArrayList;
+import java.util.concurrent.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -54,7 +59,11 @@ public class JSF31KochFractalFX extends Application {
     private Canvas kochPanel;
     private final int kpWidth = 500;
     private final int kpHeight = 500;
-    
+
+    private ProgressBar progressEdgeBottom;
+    private ProgressBar progressEdgeLeft;
+    private ProgressBar progressEdgeRight;
+
     @Override
     public void start(Stage primaryStage) {
        
@@ -90,20 +99,29 @@ public class JSF31KochFractalFX extends Application {
         labelDrawText = new Label();
         grid.add(labelDraw, 0, 2, 4, 1);
         grid.add(labelDrawText, 3, 2, 22, 1);
-        
+
         // Label to present current level of Koch fractal
         labelLevel = new Label("Level: " + currentLevel);
         grid.add(labelLevel, 0, 6);
+
+        grid.add(new Label("Progress Edge Right"), 0, 7, 1, 1);
+        progressEdgeRight = new ProgressBar();
+        grid.add(progressEdgeRight, 1, 7, 1,1);
+
+
+        grid.add(new Label("Progress Edge Bottom"), 0, 8, 1, 1);
+        progressEdgeBottom = new ProgressBar();
+        grid.add(progressEdgeBottom, 1, 8, 1,1);
+
+
+        grid.add(new Label("Progress Edge Left"), 0, 9, 1, 1);
+        progressEdgeLeft = new ProgressBar();
+        grid.add(progressEdgeLeft, 1, 9, 1,1);
         
         // Button to increase level of Koch fractal
         Button buttonIncreaseLevel = new Button();
         buttonIncreaseLevel.setText("Increase Level");
-        buttonIncreaseLevel.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                increaseLevelButtonActionPerformed(event);
-            }
-        });
+        buttonIncreaseLevel.setOnAction(event -> increaseLevelButtonActionPerformed(event));
         grid.add(buttonIncreaseLevel, 3, 6);
 
         // Button to decrease level of Koch fractal
@@ -161,7 +179,7 @@ public class JSF31KochFractalFX extends Application {
         
         // Create the scene and add the grid pane
         Group root = new Group();
-        Scene scene = new Scene(root, kpWidth+50, kpHeight+170);
+        Scene scene = new Scene(root, kpWidth+50, kpHeight+270);
         root.getChildren().add(grid);
         
         // Define title and assign the scene for main window
@@ -186,7 +204,30 @@ public class JSF31KochFractalFX extends Application {
         
         // Set line color
         gc.setStroke(e1.color);
+
+        setLineWidth(gc);
         
+        // Draw line
+        gc.strokeLine(e1.X1,e1.Y1,e1.X2,e1.Y2);
+    }
+
+    public void drawEdgeWhite(Edge e) {
+        // Graphics
+        GraphicsContext gc = kochPanel.getGraphicsContext2D();
+
+        // Adjust edge for zoom and drag
+        Edge e1 = edgeAfterZoomAndDrag(e);
+
+        // Set line color
+        gc.setStroke(Color.WHITE);
+
+        setLineWidth(gc);
+
+        // Draw line
+        gc.strokeLine(e1.X1,e1.Y1,e1.X2,e1.Y2);
+    }
+
+    private void setLineWidth(GraphicsContext gc) {
         // Set line width depending on level
         if (currentLevel <= 3) {
             gc.setLineWidth(2.0);
@@ -197,9 +238,6 @@ public class JSF31KochFractalFX extends Application {
         else {
             gc.setLineWidth(1.0);
         }
-        
-        // Draw line
-        gc.strokeLine(e1.X1,e1.Y1,e1.X2,e1.Y2);
     }
     
     public void setTextNrEdges(String text) {
@@ -293,7 +331,17 @@ public class JSF31KochFractalFX extends Application {
                 e.color);
     }
 
+    public void addRightEdgeTask(Task<ArrayList<Edge>> task) {
+        progressEdgeRight.progressProperty().bind(task.progressProperty());
+    }
 
+    public void addBottomEdgeTask(Task<ArrayList<Edge>> task) {
+        progressEdgeBottom.progressProperty().bind(task.progressProperty());
+    }
+
+    public void addLeftEdgeTask(Task<ArrayList<Edge>> task) {
+        progressEdgeLeft.progressProperty().bind(task.progressProperty());
+    }
 
     /**
      * The main() method is ignored in correctly deployed JavaFX application.

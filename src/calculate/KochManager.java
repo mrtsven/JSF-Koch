@@ -30,19 +30,24 @@ public class KochManager {
         EdgeGenerator rightEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Right);
         EdgeGenerator bottomEdgeGenerator = new EdgeGenerator(nxt, EdgeType.Bottom);
 
-        ExecutorService pool = Executors.newFixedThreadPool(3);
-        Future<List<Edge>> leftFuture =  pool.submit(leftEdgeGenerator);
-        Future<List<Edge>> rightFuture =  pool.submit(rightEdgeGenerator);
-        Future<List<Edge>> bottomFuture = pool.submit(bottomEdgeGenerator);
+        application.addLeftEdgeTask(leftEdgeGenerator);
+        application.addRightEdgeTask(rightEdgeGenerator);
+        application.addBottomEdgeTask(bottomEdgeGenerator);
 
-        pool.shutdown();
+        leftEdgeGenerator.progressProperty().addListener((e) -> ProgressUpdate(leftEdgeGenerator));
+        rightEdgeGenerator.progressProperty().addListener((e) -> ProgressUpdate(rightEdgeGenerator));
+        bottomEdgeGenerator.progressProperty().addListener((e) -> ProgressUpdate(bottomEdgeGenerator));
+
+        new Thread(leftEdgeGenerator).start();
+        new Thread(rightEdgeGenerator).start();
+        new Thread(bottomEdgeGenerator).start();
 
         new Thread(() -> {
+            edges.clear();
             try {
-                edges.clear();
-                edges.addAll(leftFuture.get());
-                edges.addAll(rightFuture.get());
-                edges.addAll(bottomFuture.get());
+                edges.addAll(leftEdgeGenerator.get());
+                edges.addAll(rightEdgeGenerator.get());
+                edges.addAll(bottomEdgeGenerator.get());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -59,6 +64,14 @@ public class KochManager {
             });
         }).start();
 
+    }
+
+    private void ProgressUpdate(EdgeGenerator generator) {
+        ArrayList<Edge> value = generator.getValue();
+        for (int i = 0, valueSize = value.size(); i < valueSize; i++) {
+            Edge edge = value.get(i);
+            application.drawEdgeWhite(edge);
+        }
     }
 
     public void drawEdges() {

@@ -1,12 +1,14 @@
 package calculate;
 
+import javafx.concurrent.Task;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.*;
 
-public class EdgeGenerator implements Callable<List<Edge>>, Observer {
+public class EdgeGenerator extends Task<ArrayList<Edge>> implements Observer {
 
     private KochFractal fractal;
     private EdgeType type;
@@ -20,7 +22,16 @@ public class EdgeGenerator implements Callable<List<Edge>>, Observer {
     }
 
     @Override
-    public List<Edge> call() {
+    public void update(Observable o, Object arg) {
+
+        edges.add((Edge)arg);
+
+        updateValue(edges);
+        updateProgress(edges.size(), fractal.getNrOfEdges() / 3);
+    }
+
+    @Override
+    protected ArrayList<Edge> call() {
         switch (type) {
             case Left:
                 fractal.generateLeftEdge();
@@ -33,10 +44,5 @@ public class EdgeGenerator implements Callable<List<Edge>>, Observer {
                 break;
         }
         return edges;
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        edges.add((Edge)arg);
     }
 }
