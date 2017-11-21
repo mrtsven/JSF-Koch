@@ -30,6 +30,7 @@ public class KochManager {
         if (bottomEdgeGenerator != null && bottomEdgeGenerator.isRunning())
             bottomEdgeGenerator.cancel();
 
+        drawEdges();
         stamp = new TimeStamp();
         stamp.setBegin("Start calculation");
 
@@ -52,6 +53,7 @@ public class KochManager {
 
         CalculationProccesingThread = new Thread(() -> {
             edges.clear();
+
             try {
                 edges.addAll(leftEdgeGenerator.get());
                 edges.addAll(rightEdgeGenerator.get());
